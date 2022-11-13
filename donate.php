@@ -1,6 +1,9 @@
 <?php 
 require "server/functions.php";
 $err='';
+if(!isset($_GET['user'])){
+    $err='Нет такого стримера';
+}
 if($_POST && isset($_GET['user'])){
 $donate = new Donate;
 $err=$donate->makeDonation(300);

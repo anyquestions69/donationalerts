@@ -124,7 +124,7 @@ if($auth->checkCookie()){
                   </div>
                   <p class="mt-4 text-sm text-center">
                     Нет аккаунта?
-                    <a href="../pages/sign-up.html" class="text-primary text-gradient font-weight-bold">Зарегистрироваться</a>
+                    <a href="/sign-up.php" class="text-primary text-gradient font-weight-bold">Зарегистрироваться</a>
                   </p>
                 </form>
               </div>

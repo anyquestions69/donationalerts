@@ -2,6 +2,7 @@
 require "settings/db.php";
 $query = 'SELECT * FROM users';
 $result = pg_query($dbconn, $query) or die('Query failed: ' . pg_last_error());
+date_default_timezone_set('UTC');
 
 class Donate
 {
@@ -9,7 +10,27 @@ class Donate
     function __construct() {
         $this->dbconn=pg_connect("host=localhost port=5432 dbname=donat user=public_hysteria password=0666");
     }
-    
+    public function newDonators($id){
+        $res = pg_query_params($this->dbconn, 
+        'SELECT COUNT (Distinct Login) FROM donats WHERE Streamer_id=$1 AND (CAST(Date AS DECIMAL)+3600*24)>=$2', 
+        array($id, time()));
+        $line = pg_fetch_assoc($res);
+        return $line['count'];
+    }
+    public function amountToday($id){
+        $res = pg_query_params($this->dbconn, 
+        'SELECT SUM (Amount) FROM donats WHERE Streamer_id=$1 AND (CAST(Date AS DECIMAL)+3600*24)>=$2', 
+        array($id, time()));
+        $line = pg_fetch_assoc($res);
+        return $line['sum'];
+    }
+    public function countDonations($id){
+        $res = pg_query_params($this->dbconn, 
+        'SELECT COUNT (Login) FROM donats WHERE Streamer_id=$1 AND (CAST(Date AS DECIMAL)+3600*24)>=$2', 
+        array($id, time()));
+        $line = pg_fetch_assoc($res);
+        return $line['count'];
+    }
     public function makeDonation($amount){
         $check='SELECT * FROM users WHERE Login=$1 LIMIT 1';
         $authorized = pg_query_params($this->dbconn, $check, array($_GET['user']));
@@ -22,7 +43,7 @@ class Donate
             }
             $res = pg_query_params($this->dbconn, 
             'INSERT INTO donats (Login, Amount, Date, Streamer_id, goal_id, Message) VALUES ($1, $2, $3, $4, $5, $6)',
-            array($_POST['login'], $_POST['amount'], '2423', $line['id'], $line['goal_id'], $_POST['message']));
+            array($_POST['login'], $_POST['amount'], time(), $line['id'], $line['goal_id'], $_POST['message']));
             
             $res = pg_query_params($this->dbconn, 
             'UPDATE users SET Balance = Balance+$1 WHERE id=$2',
@@ -64,6 +85,13 @@ class Donate
             }
             return $dons;
         }
+    }
+}
+class Goal
+{
+    public $dbconn;
+    function __construct() {
+        $this->dbconn=pg_connect("host=localhost port=5432 dbname=donat user=public_hysteria password=0666");
     }
 }
 

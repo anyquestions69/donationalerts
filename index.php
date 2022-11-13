@@ -197,7 +197,7 @@ $donators = $donate->listDonators($user['id']);
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Прибыль за сегодня</p>
-                <h4 class="mb-0">$53k</h4>
+                <h4 class="mb-0"><?php echo $donate->amountToday($user['id'])?>₽</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -213,8 +213,8 @@ $donators = $donate->listDonators($user['id']);
                 <i class="material-icons opacity-10">person</i>
               </div>
               <div class="text-end pt-1">
-                <p class="text-sm mb-0 text-capitalize">Донатеров сегодня</p>
-                <h4 class="mb-0">2,300</h4>
+                <p class="text-sm mb-0 text-capitalize">Донатов сегодня</p>
+                <h4 class="mb-0"><?php echo $donate->countDonations($user['id']);?></h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -231,7 +231,7 @@ $donators = $donate->listDonators($user['id']);
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Новых донатеров</p>
-                <h4 class="mb-0">3,462</h4>
+                <h4 class="mb-0"><?php echo $donate->newDonators($user['id']);?></h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -248,7 +248,7 @@ $donators = $donate->listDonators($user['id']);
               </div>
               <div class="text-end pt-1">
                 <p class="text-sm mb-0 text-capitalize">Баланс</p>
-                <h4 class="mb-0">$103,430</h4>
+                <h4 class="mb-0"><?php echo $user['balance'];?>₽</h4>
               </div>
             </div>
             <hr class="dark horizontal my-0">
@@ -300,7 +300,7 @@ $donators = $donate->listDonators($user['id']);
                         <td>
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">'.$line['login'].'</h6>
+                              <h6 class="mb-0">'.$line['login'].'</h6>
                             </div>
                           </div>
                         </td>
@@ -309,11 +309,11 @@ $donators = $donate->listDonators($user['id']);
                           '.$line['message'].'
                           </div>
                         </td>
-                        <td class="align-middle text-center text-sm">
-                          <span class="text-xs font-weight-bold"> '.$line['amount'].' р </span>
+                        <td class="align-middle text-center">
+                          <span class="font-weight-bold"> '.$line['amount'].' ₽ </span>
                         </td>
-                        <td class="align-middle text-center text-sm">
-                          <span class="text-xs font-weight-bold"> '.$line['date'].' р </span>
+                        <td class="align-middle text-center">
+                          <span class=" font-weight-bold"> '.date('m.d.y G:i:s', $line['date']).'</span>
                         </td>
                         
                       </tr>
@@ -368,29 +368,45 @@ $donators = $donate->listDonators($user['id']);
                   </thead>
                   <tbody>
                     <?php 
-
+                    $sorted_array=array();
+                    $names=array();
+                    $i=0;
+                    $counter=0;
+                    $donators1 = $donate->listDonators($user['id']);
                     foreach($donators as $name=>$amount){
-                        echo '
-                        <tr>
-                        <td>
-                          <div class="d-flex px-2 py-1">
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">'.$name.'</h6>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="avatar-group mt-2">
-                          '.$amount[1].'
-                          </div>
-                        </td>
-                        <td class="align-middle text-center text-sm">
-                          <span class="text-xs font-weight-bold"> '.$amount[0].' р </span>
-                        </td>
-                        
-                      </tr>
-                        ';
+                        $names[$i]=$amount[0];
+                        $i++;
                     }
+                    rsort($names);
+                    
+                    while($counter < count($donators)){
+                        foreach($donators1 as $name=>$amount){
+                            if($amount[0]==$names[$counter]){
+                                echo '
+                                <tr>
+                                <td>
+                                <div class="d-flex px-2 py-1">
+                                    <div class="d-flex flex-column justify-content-center">
+                                    <h6 class="mb-0 text-sm">'.$name.'</h6>
+                                    </div>
+                                </div>
+                                </td>
+                                <td>
+                                <div class="avatar-group mt-2">
+                                '.$amount[1].'₽
+                                </div>
+                                </td>
+                                <td class="align-middle text-center">
+                                <span class="font-weight-bold"> '.$amount[0].'₽ </span>
+                                </td>
+                                
+                            </tr>
+                                ';
+                            }
+                        }
+                        $counter++;
+                    }
+                    
                     ?>
                     
                     

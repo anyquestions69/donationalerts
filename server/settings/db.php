@@ -37,4 +37,16 @@ $sql = "CREATE TABLE IF NOT EXISTS donats (
     if (!$res) {
     echo "Произошла ошибка.\n";
     }
+$sql = "CREATE TABLE IF NOT EXISTS goals (
+    Id SERIAL PRIMARY KEY,
+    Current INTEGER,
+    Goal INTEGER,
+    Title CHARACTER VARYING(30),
+    Start INTEGER,
+    Finish INTEGER NULL,
+    Streamer_id INTEGER
+    )";
+
+$res = pg_query($dbconn, $sql);
+    
 }
